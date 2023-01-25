@@ -14,5 +14,5 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name : say hello after closing the terminal
-        run: echo "hello again"
+      - name : say hello after running it as a service and closing the terminal
+        run: echo "hello again from service"
