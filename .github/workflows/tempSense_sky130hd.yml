@@ -19,6 +19,8 @@ jobs:
                 IMAGE_NAME: msaligane/openfasoc:stable
         run: |
           cd $GITHUB_WORKSPACE
+          git clone https://github.com/idea-fasoc/OpenFASOC
+          cd OpenFASOC
           touch file.log
           echo $PWD
           docker run --rm \
