@@ -20,11 +20,13 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           touch file.log
+          echo $PWD
           docker run --rm \
             -v $PWD:$PWD\
             -w $PWD\
             $IMAGE_NAME\
             bash -c "\
+              ls -al
               pip3 install -r requirements.txt &&\
               cd ./openfasoc/generators/temp-sense-gen &&\
               make sky130hd_temp\
