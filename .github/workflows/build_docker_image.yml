@@ -1,0 +1,28 @@
+#This flow will build the latest docker image, test the OpenFASOC flow in it and if it works, update the readme file and push it to the docker hub for reference
+
+name: Build and test with the latest version of tools set
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #  - cron: 0 1 * * * # run at 1 AM UTC
+
+jobs:
+  build_docker_image:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the docker image
+        env:
+              IMAGE_NAME: ghcr.io/idea-fasoc/openfasoc_ci:alpha
+        run: |
+          cd $GITHUB_WORKSPACE/docker_image
+          docker build . --tag $IMAGE_NAME --no-cache
+          docker push $IMAGE_NAME
