@@ -25,7 +25,8 @@ jobs:
         run: |
           cp $GITHUB_WORKSPACE/utils/run_regression.sh $GITHUB_WORKSPACE/openfasoc/OpenFASOC/.
           cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmod 755 run_regression.sh
-          ./run_regression.sh     
+          ./run_regression.sh
+          cd $GITHUB_WORKSPACE && sudo rm -rf openfasoc  
 
 
       - name: Build csv file and archive the results
@@ -39,7 +40,6 @@ jobs:
         run: |
 
           cd $GITHUB_WORKSPACE
-          sudo rm -rf openfasoc
           git status
           git config --global user.name 'sai charan'
           git config --global user.email 'saicharan0112@users.noreply.github.com'
