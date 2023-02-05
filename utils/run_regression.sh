@@ -36,7 +36,7 @@ h=3
 i=6
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
 
-docker run --rm -v $PWD:$PWD -w $PWD --user $(id -u):$(id -g) $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp_full sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
+docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp_full sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
 
 cd openfasoc/generators/temp-sense-gen/
 
