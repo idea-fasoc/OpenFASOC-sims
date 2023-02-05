@@ -33,5 +33,7 @@ do
             sudo cp -rf work/* /home/$USER/runner_results/$h-head-$i-inv/.
             sudo cp $h-head-$i-inv.log /home/$USER/runner_results/$h-head-$i-inv/.
 
+            cd ../../../
+
         done
 done
