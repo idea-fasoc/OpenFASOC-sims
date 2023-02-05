@@ -34,7 +34,8 @@ jobs:
 
           cp $GITHUB_WORKSPACE/utils/build_csv.py /home/$USER/runner_results/.
           cp $GITHUB_WORKSPACE/utils/build_results.sh /home/$USER/runner_results/.
-          cd /home/$USER/runner_results/. && ./build_results.sh
+          cd /home/$USER/runner_results/.
+          chmod 755 ./build_results.sh && ./build_results.sh
 
       - name: Upload the csv file to this repo
         run: |
