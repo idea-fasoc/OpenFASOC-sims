@@ -24,7 +24,7 @@ jobs:
       - name: Run regression
         run: |
           cp $GITHUB_WORKSPACE/utils/run_regression.sh $GITHUB_WORKSPACE/openfasoc/OpenFASOC/.
-          cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmo 755 run_regression.sh
+          cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmod 755 run_regression.sh
           ./run_regression.sh     
 
 
