@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+echo "GITHUB_WORKSPACE - $GITHUB_WORKSPACE"
 # run build_csv.py to generate the csv data
 python3 build_csv.py
 cp data.csv /home/alex/git_runner/actions-runner/_work/OpenFASOC-sims/OpenFASOC-sims/data_$(date +%m-%d-%Y-%T).csv

@@ -18,31 +18,20 @@
 # this will generate the data and copy them to /home/$USER/runner_results directory
 
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
-h=3
-i=6
 
-docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp_full sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
+for h in {5..9..2}
+do
+        for i in {2..10..2}
+        do
 
-cd openfasoc/generators/temp-sense-gen/
+            docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp_full sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
 
-mkdir -p /home/$USER/runner_results/$h-head-$i-inv
-sudo cp -rf simulations/run/* /home/$USER/runner_results/$h-head-$i-inv/.
-sudo cp -rf work/* /home/$USER/runner_results/$h-head-$i-inv/.
-sudo cp $h-head-$i-inv.log /home/$USER/runner_results/$h-head-$i-inv/.
+            cd openfasoc/generators/temp-sense-gen/
 
-# for h in {5..9..2}
-# do
-#         for i in {2..10..2}
-#         do
+            mkdir -p /home/$USER/runner_results/$h-head-$i-inv
+            sudo cp -rf simulations/run/* /home/$USER/runner_results/$h-head-$i-inv/.
+            sudo cp -rf work/* /home/$USER/runner_results/$h-head-$i-inv/.
+            sudo cp $h-head-$i-inv.log /home/$USER/runner_results/$h-head-$i-inv/.
 
-#             docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp_full sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
-
-#             cd openfasoc/generators/temp-sense-gen/
-
-#             mkdir -p /home/$USER/runner_results/$h-head-$i-inv
-#             sudo cp -rf simulations/run/* /home/$USER/runner_results/$h-head-$i-inv/.
-#             sudo cp -rf work/* /home/$USER/runner_results/$h-head-$i-inv/.
-#             sudo cp $h-head-$i-inv.log /home/$USER/runner_results/$h-head-$i-inv/.
-
-#         done
-# done
+        done
+done
