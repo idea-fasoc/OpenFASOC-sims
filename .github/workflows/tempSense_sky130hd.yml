@@ -28,17 +28,21 @@ jobs:
           ./run_regression.sh     
 
 
-      # - name: Build csv file and push changes
-      #   run: |
-      #     mkdir $GITHUB_WORKSPACE/data -p
-      #     cp -rf $GITHUB_WORKSPACE/../3_head_6_inv $GITHUB_WORKSPACE/data/.
-      #     chmod 755 $GITHUB_WORKSPACE/utils/build_csv.py
-      #     cd $GITHUB_WORKSPACE/utils
-      #     python3 ./build_csv.py
-      #     cd $GITHUB_WORKSPACE
-      #     git status
-      #     git config --global user.name 'sai charan'
-      #     git config --global user.email 'saicharan0112@users.noreply.github.com'
-      #     git add -A 
-      #     git commit -m "add run data"
-      #     git push
+      - name: Build csv file and archive the results
+        run: |
+
+          cp $GITHUB_WORKSPACE/utils/build_csv.py /home/$USER/runner_data/.
+          cp $GITHUB_WORKSPACE/utils/build_results.sh /home/$USER/runner_data/.
+          cd /home/$USER/runner_data/. && ./build_results.sh
+
+      - name: Upload the csv file to this repo
+        run: |
+
+          cd $GITHUB_WORKSPACE
+          sudo rm -rf openfasoc
+          git status
+          git config --global user.name 'sai charan'
+          git config --global user.email 'saicharan0112@users.noreply.github.com'
+          git add -A 
+          git commit -m "add run data"
+          git push

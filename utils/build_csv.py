@@ -9,11 +9,11 @@ values=[]
 result=[]
 
 for i in folders:
-    config=i.split("_")
+    config=i.split("-")
     header=config[0]
     inverter=config[2]
 
-    # open drc report and look whether the count is blank or not - basically the first line of the drc report should end with " " for the drc errors to be 0
+    # open drc report and look whether the count is blank or not - apparently the first line of the drc report should end with " " for the drc errors to be 0
     if os.path.exists(Direc+i+"/6_final_drc.rpt"):
         with open(Direc+i+"/6_final_drc.rpt") as lines:
             for line in lines:
