@@ -1,0 +1,71 @@
+name: sky130hd_temp-sense-generator
+
+on:
+  # push:
+  #   branches:
+  #   - main
+  # pull_request:
+  workflow_dispatch:
+
+jobs:
+  tempSense-sky130hd:
+    runs-on: self-hosted
+    steps:
+
+      - name: Clone this repo
+        uses: actions/checkout@v2
+
+      - name: Clone OpenFASOC repo
+        run: |
+          mkdir $GITHUB_WORKSPACE/openfasoc && cd $GITHUB_WORKSPACE/openfasoc
+          git clone https://github.com/saicharan0112/OpenFASOC && cd OpenFASOC
+
+      - name: Check the directory arragements
+        run: |
+          echo "$GITHUB_WORKSPACE - "$GITHUB_WORKSPACE
+          echo "$PWD - "$PWD
+          tree -L 2
+
+
+      # - name: Run tempSense generator
+      #   env:
+      #           IMAGE_NAME: ghcr.io/idea-fasoc/openfasoc_ci_image:alpha
+      #   run: |
+      #     touch logfile.txt
+      #     docker run --rm --user $(id -u):$(id -g)\
+      #       -v $PWD:$PWD\
+      #       -w $PWD\
+      #       $IMAGE_NAME\
+      #       bash -c "\
+      #         cd openfasoc/OpenFASOC &&\
+      #         pip3 install -r requirements.txt &&\
+      #         cd ./openfasoc/generators/temp-sense-gen &&\
+      #         make sky130hd_temp_full nhead=3 ninv=6\
+      #       "| tee -a logfile.txt
+      #     if grep "\[ERROR\]" logfile.txt; then exit 1; else exit 0; fi     
+
+      # - name: Prepare for Checkout
+      #   run: |
+      #     mkdir $GITHUB_WORKSPACE/../3_head_6_inv -p
+      #     cp -rf $GITHUB_WORKSPACE/openfasoc/OpenFASOC/openfasoc/generators/temp-sense-gen/work/* $GITHUB_WORKSPACE/../3_head_6_inv/.
+      #     cp -rf $GITHUB_WORKSPACE/openfasoc/OpenFASOC/openfasoc/generators/temp-sense-gen/simulations/run/* $GITHUB_WORKSPACE/../3_head_6_inv/.
+      #     cp -rf $GITHUB_WORKSPACE/openfasoc/OpenFASOC/logfile.txt $GITHUB_WORKSPACE/../3_head_6_inv/.
+      #     sudo rm -rf $GITHUB_WORKSPACE/openfasoc
+
+      # - name: Checkout this repo
+      #   uses: actions/checkout@v3
+
+      # - name: Build csv file and push changes
+      #   run: |
+      #     mkdir $GITHUB_WORKSPACE/data -p
+      #     cp -rf $GITHUB_WORKSPACE/../3_head_6_inv $GITHUB_WORKSPACE/data/.
+      #     chmod 755 $GITHUB_WORKSPACE/utils/build_csv.py
+      #     cd $GITHUB_WORKSPACE/utils
+      #     python3 ./build_csv.py
+      #     cd $GITHUB_WORKSPACE
+      #     git status
+      #     git config --global user.name 'sai charan'
+      #     git config --global user.email 'saicharan0112@users.noreply.github.com'
+      #     git add -A 
+      #     git commit -m "add run data"
+      #     git push
