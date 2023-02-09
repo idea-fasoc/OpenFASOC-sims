@@ -6,7 +6,8 @@ Direc=os.getcwd()+"/"
 items=os.listdir(Direc)
 folders = [f for f in items if not os.path.isfile(Direc+f)]
 values=[]
-result=[]
+result_pre=[]
+result_post=[]
 
 for i in folders:
     config=i.split("-")
@@ -23,7 +24,7 @@ for i in folders:
                     drc="not clean"
                 break
     else:
-        print("Error - found no drc rpt")
+        print("Error - found no drc rpt for "+i+" config")
 
     # open lvs report and look for the line "Final result: Circuits match uniquely.". If found, lvs is clean, else it is failed
     if os.path.exists(Direc+i+"/6_final_drc.rpt"):
@@ -34,28 +35,50 @@ for i in folders:
             else:
                 lvs="not clean"
     else:
-        print("Error - found not lvs rpt")
+        print("Error - found not lvs rpt for "+i+" config")
     
-    # open all folders, get the config, open prePEX_sim_output and extract temp-freq-power-error. 
+    # open prePEX_sim_output and extract temp-freq-power-error. 
     if os.path.exists(Direc+i+"/prePEX_sim_result"): 
         with open(Direc+i+"/prePEX_sim_result") as lines:
             for line in lines:
                 data=line.split()
-                if not "/" in data[0] and (data[0].isdigit() or data[0].startswith("-")):
+                if not "/" in data[0] and (data[0].isdigit() or data[0].startswith("-") or "." in data[0]):
                     values.append([header,inverter]+data)
     else:
-        print("Error - found not sim rpt")
+        print("Error - found not sim rpt for "+i+" config")
     
     # combine all results in single dictionary
-    result.append(values)
+    result_pre.append(values)
     values=[]
+
+    # open postPEX_sim_output and extract temp-freq-power-error. 
+    if os.path.exists(Direc+i+"/PEX_sim_result"):
+        with open(Direc+i+"/PEX_sim_result") as lines:
+            for line in lines:
+                data=line.split()
+                if not "/" in data[0] and (data[0].isdigit() or data[0].startswith("-") or "." in data[0]):
+                    values.append([header,inverter]+data)
+    else:
+        print("Error - found not sim rpt for "+i+" config")
+
+    # combine all results in single dictionary
+    result_post.append(values)
+    values=[]
+
+
 
 # dump results in a csv file
 fields=["header","inverter","temp","freq","power","error"]
-with open("data.csv","w") as f:
+with open("data_prePEX.csv","w") as f:
     write = csv.writer(f)
 
     write.writerow(fields)
-    for i in result:
+    for i in result_pre:
         write.writerows(i)
 
+with open("data_postPEX.csv","w") as f:
+    write = csv.writer(f)
+
+    write.writerow(fields)
+    for i in result_post:
+        write.writerows(i)

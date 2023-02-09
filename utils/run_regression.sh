@@ -15,7 +15,7 @@
 #     └── build_csv.py
 
 # copy this script from utils to openfasoc/OpenFASOC/. . navigate to that location and then run it.
-# this will generate the data and copy them to /home/$USER/runner_results directory
+# this will generate the spice decks in the end and copy them to /home/$USER/runner_results
 
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
 
@@ -24,7 +24,7 @@ do
         for i in {2..10..2}
         do
 
-            docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp_full sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
+            docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"
 
             cd openfasoc/generators/temp-sense-gen/
 
