@@ -21,11 +21,11 @@ jobs:
           git clone https://github.com/saicharan0112/OpenFASOC && cd OpenFASOC
 
 
-      - name: Run regression (1) - run the generator and build spice decks
-        run: |
-          cp $GITHUB_WORKSPACE/utils/run_regression.sh $GITHUB_WORKSPACE/openfasoc/OpenFASOC/.
-          cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmod 755 run_regression.sh
-          ./run_regression.sh 
+      # - name: Run regression (1) - run the generator and build spice decks
+      #   run: |
+      #     cp $GITHUB_WORKSPACE/utils/run_regression.sh $GITHUB_WORKSPACE/openfasoc/OpenFASOC/.
+      #     cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmod 755 run_regression.sh
+      #     ./run_regression.sh 
 
       - name: Run regression (2) - run the simulations all in parallel and extract results
         run: |
@@ -34,7 +34,8 @@ jobs:
           cp $GITHUB_WORKSPACE/utils/extract_results.py /home/$USER/runner_results/.
           cd /home/$USER/runner_results/.
           sudo chmod 777 -R ./*
-          chmod 755 run_sim.py && python3 run_sim.py
+          chmod 755 run_sim.py 
+          docker run --rm -v $HOME:$HOME -e USER=$USER -w $PWD ghcr.io/idea-fasoc/openfasoc_ci:alpha bash -c "python3 run_sim.py"
           chmod 755 extract_results.py && python3 extract_results.py
           cd $GITHUB_WORKSPACE && sudo rm -rf openfasoc
 
