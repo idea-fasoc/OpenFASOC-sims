@@ -19,9 +19,6 @@
 
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
 
-# clean the prev results_data
-sudo rm -rf /home/$USER/runner_results/*
-
 for h in {5..9..2}
 do
         for i in {2..10..2}
@@ -40,5 +37,3 @@ do
 
         done
 done
-
-sudo chmod 777 -R /home/$USER/runner_results/*
