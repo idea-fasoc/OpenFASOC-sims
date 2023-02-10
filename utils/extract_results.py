@@ -2,7 +2,6 @@
 
 import subprocess as sp
 import os
-import fileinput
 
 # get the list of all folders inside /home/runner_results/
 
@@ -15,7 +14,8 @@ rootDir = "/home/"+os.getenv("USER")+"/runner_results"
 for i in os.listdir(rootDir):
 
     # i is the path of the directory - eg: /home/alex/runner_archives/5-head-10-inv
-    if os.path.isdir(i):
+    if os.path.isdir(rootDir+"/"+i):
+        
 
         config=i.split("-")
         header=config[0]
@@ -25,33 +25,29 @@ for i in os.listdir(rootDir):
         for j in ["prePEX", "PEX"]:
             path = rootDir+"/"+i+"/"+j+"_inv"+inverter+"_header"+header
             runDir = path
-
+            os.chdir(path)
 
             for temp in temp_list:
 
-                # modify the path of the base spice file in .include line - https://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
-                with fileinput.input(path+"/{0}_sim_{1}.sp".format(designName, temp), inplace=True) as file:
-                    for line in file:
-                        if ".include" in line:
-                            text = line.split(".include")
-                            new_line = line.replace(text[1].strip(),"'{0}/{1}.spice'".format(path, designName))
-                        else:
-                            new_line = line
-
-                        print(new_line, end='')
-
-
                 p = sp.Popen(
                     [
+                        "python",
+                        "result.py",
+                        "--tool",
                         "ngspice",
-                        "-b",
-                        "-o",
+                        "--inputFile",
                         "%s/%s_sim_%d.log" % (path, designName, temp),
-                        "%s/%s_sim_%d.sp" % (path, designName, temp),
                     ],
                     cwd=runDir,
                 )
-                processes.append(p)
+                p.wait()
 
-for p in processes:
-    p.wait()
+
+            p = sp.Popen(["python", "result_error.py", "--mode", "partial"], cwd=runDir)
+            p.wait()
+
+            if os.path.isfile(runDir+"/all_result"):
+                os.system("cp all_result ../{0}_sim_result".format(j))
+            
+            else:
+                print(runDir+"/all_result not generated for "+j+"_inv"+inverter+"_header"+header)
