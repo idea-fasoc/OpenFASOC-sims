@@ -1,18 +1,19 @@
 #!/bin/bash
 
-echo "GITHUB_WORKSPACE - $GITHUB_WORKSPACE"
 # run build_csv.py to generate the csv data
 python3 build_csv.py
 
 # copy generated csv data to the github repo
 FILE_prePEX=data_prePEX.csv
 if [ -f "$FILE_prePEX" ]; then
-    cp $FILE_prePEX $GITHUB_WORKSPACE/data_prePEX_$(date +%m-%d-%Y-%T).csv
+    mkdir -p $GITHUB_WORKSPACE/prePEX_data
+    cp $FILE_prePEX $GITHUB_WORKSPACE/prePEX_data/data_prePEX_$(date +%m-%d-%Y-%T).csv
 fi
 
 FILE_postPEX=data_postPEX.csv
 if [ -f "$FILE_postPEX" ]; then
-    cp $FILE_postPEX $GITHUB_WORKSPACE/data_postPEX_$(date +%m-%d-%Y-%T).csv
+    mkdir -p $GITHUB_WORKSPACE/PEX_data
+    cp $FILE_postPEX $GITHUB_WORKSPACE/PEX_data/data_postPEX_$(date +%m-%d-%Y-%T).csv
 fi
 
 

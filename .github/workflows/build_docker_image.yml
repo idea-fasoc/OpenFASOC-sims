@@ -1,6 +1,6 @@
 #This flow will build the latest docker image, test the OpenFASOC flow in it and if it works, update the readme file and push it to the docker hub for reference
 
-name: Build and test with the latest version of tools set
+name: Build the latest image with all tool dependencies
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: sky130hd_temp-sense-generator
+name: Test temp-sense generator (sky130hd)
 
 on:
   # push:
