@@ -10,6 +10,7 @@ on:
 jobs:
   tempSense-sky130hd:
     runs-on: self-hosted
+    timeout-minutes: 420
     steps:
 
       - name: Clone this repo
