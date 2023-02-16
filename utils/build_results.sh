@@ -6,7 +6,7 @@ python3 build_csv.py
 # copy generated csv data to the github repo
 FILE_prePEX=data_prePEX.csv
 if [ -f "$FILE_prePEX" ]; then
-    mkdir -p $GITHUB_WORKSPACE/prePEX_data_results
+    mkdir -p $GITHUB_WORKSPACE/prePEX_data
     mkdir -p $GITHUB_WORKSPACE/latest
     cp $FILE_prePEX $GITHUB_WORKSPACE/prePEX_data/data_prePEX_$(date +%m-%d-%Y-%T).csv
     cp $FILE_prePEX $GITHUB_WORKSPACE/latest/data_prePEX.csv
