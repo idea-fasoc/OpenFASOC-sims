@@ -10,7 +10,7 @@ on:
 jobs:
   tempSense-sky130hd:
     runs-on: self-hosted
-    timeout-minutes: 420
+    timeout-minutes: 420 #increase timeout from default (360mins - 6 hrs to 420mins - 7 hrs)
     steps:
 
       - name: Clone this repo
@@ -46,6 +46,11 @@ jobs:
           cp $GITHUB_WORKSPACE/utils/build_results.sh /home/$USER/runner_results/.
           cd /home/$USER/runner_results/.
           chmod 755 ./build_results.sh && ./build_results.sh
+
+      - name: Extract versions information from the image
+        run: |
+          cd $GITHUB_WORKSPACE
+          docker run --rm -v $PWD:$PWD ghcr.io/idea-fasoc/openfasoc_ci:alpha bash -c "chmod 755 /get_versions.sh && /get_versions.sh" > $GITHUB_WORKSPACE/latest/versions.txt
 
       - name: Upload the csv data to this repo
         run: |

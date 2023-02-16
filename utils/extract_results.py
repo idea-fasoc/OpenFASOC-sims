@@ -10,7 +10,7 @@ designName = "tempsenseInst_error"
 temp_list=[0, 20, 40, 60, 80, 100]
 processes=[]
 
-rootDir = "/home/"+os.getenv("USER")+"/runner_test_results"
+rootDir = "/home/"+os.getenv("USER")+"/runner_results"
 for i in os.listdir(rootDir):
 
     # i is the path of the directory - eg: /home/alex/runner_archives/5-head-10-inv

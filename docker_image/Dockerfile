@@ -31,7 +31,7 @@ RUN strip --remove-section=.note.ABI-tag /usr/lib/x86_64-linux-gnu/libQt5Core.so
 RUN git clone http://git.code.sf.net/p/ngspice/ngspice
 RUN cd ngspice && ./compile_linux.sh
 
-#COPY ./scripts /scripts
+COPY get_versions.sh .
 COPY xyce_install.sh .
 RUN ./xyce_install.sh
 

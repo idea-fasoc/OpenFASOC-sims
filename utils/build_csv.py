@@ -49,27 +49,16 @@ for i in folders:
         a = 0
         for line2 in times.readlines():
             time_value = line2.split(" ")
-            print(values[a])
-            print(time_value[len(time_value)-1])
             values[a].append(time_value[len(time_value)-1].strip())
-            print(values[a])
             a += 1
 
     else:
         print("Error - found not sim rpt for "+i+" config")
     
     # combine all results in single dictionary
-    print(values)
     result_pre.append(values)
     values=[]
 
-    # open postPEX_sim_output and extract temp-freq-power-error. 
-    # if os.path.exists(Direc+i+"/PEX_sim_result") and os.path.exists(Direc+i+"/PEX_timeStamps"):
-    #     with open(Direc+i+"/PEX_sim_result") as lines:
-    #         for line in lines:
-    #             data=line.split()
-    #             if not "/" in data[0] and (data[0].isdigit() or data[0].startswith("-") or "." in data[0]):
-    #                 values.append([header,inverter]+data)
 
     if os.path.exists(Direc+i+"/PEX_sim_result") and os.path.exists(Direc+i+"/PEX_timeStamps"): 
         lines = open(Direc+i+"/PEX_sim_result")
@@ -82,10 +71,7 @@ for i in folders:
         a = 0
         for line2 in times.readlines():
             time_value = line2.split(" ")
-            print(values[a])
-            print(time_value[len(time_value)-1])
             values[a].append(time_value[len(time_value)-1].strip())
-            print(values[a])
             a += 1
     else:
         print("Error - found not sim rpt for "+i+" config")
