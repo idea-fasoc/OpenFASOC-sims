@@ -10,7 +10,6 @@ on:
 jobs:
   tempSense-sky130hd:
     runs-on: self-hosted
-    timeout-minutes: 420 #increase timeout from default (360mins - 6 hrs to 420mins - 7 hrs)
     steps:
 
       - name: Clone this repo
@@ -29,8 +28,8 @@ jobs:
           ./run_regression.sh 
 
       - name: Run regression (2) - run the simulations all in parallel and extract results
+        timeout-minutes: 420 #stop regression after 7 hours and proceed building results with the existing data
         run: |
-          
           cp $GITHUB_WORKSPACE/utils/run_sim.py /home/$USER/runner_results/.
           cp $GITHUB_WORKSPACE/utils/extract_results.py /home/$USER/runner_results/.
           cd /home/$USER/runner_results/.
@@ -42,6 +41,7 @@ jobs:
 
       - name: Build csv files from the extracted results and archive the results
         run: |
+          docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
           cp $GITHUB_WORKSPACE/utils/build_csv.py /home/$USER/runner_results/.
           cp $GITHUB_WORKSPACE/utils/build_results.sh /home/$USER/runner_results/.
           cd /home/$USER/runner_results/.

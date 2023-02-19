@@ -8,7 +8,7 @@ import fileinput
 
 
 designName = "tempsenseInst_error"
-temp_list=[0, 20, 40, 60, 80, 100]
+temp_list=[-20, 0, 20, 40, 60, 80, 100]
 processes=[]
 
 rootDir = "/home/"+os.getenv("USER")+"/runner_results"

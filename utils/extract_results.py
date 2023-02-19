@@ -7,7 +7,7 @@ import os, datetime, math
 
 
 designName = "tempsenseInst_error"
-temp_list=[0, 20, 40, 60, 80, 100]
+temp_list=[-20, 0, 20, 40, 60, 80, 100]
 processes=[]
 
 rootDir = "/home/"+os.getenv("USER")+"/runner_results"
@@ -31,8 +31,13 @@ for i in os.listdir(rootDir):
             for temp in temp_list:
                 
                 # get the time diff between the last modifications of .sp file and .log file
-                value = datetime.datetime.fromtimestamp(os.path.getmtime("%s/%s_sim_%d.log" % (path, designName, temp))) - datetime.datetime.fromtimestamp(os.path.getmtime("%s/%s_sim_%d.sp" % (path, designName, temp)))
-                timediff.append("{0} {1}".format(temp, round((value.seconds)/60,4)))
+                if os.path.exists("%s/%s_sim_%d.log" % (path, designName, temp)):
+
+                    value = datetime.datetime.fromtimestamp(os.path.getmtime("%s/%s_sim_%d.log" % (path, designName, temp))) - datetime.datetime.fromtimestamp(os.path.getmtime("%s/%s_sim_%d.sp" % (path, designName, temp)))
+                    timediff.append("{0} {1}".format(temp, round((value.seconds)/60,4)))
+                
+                else:
+                    timediff.append("{0} {1}".format(temp, "timeout"))
 
                 p = sp.Popen(
                     [
