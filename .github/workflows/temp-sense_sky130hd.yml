@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  tempSense-sky130hd:
+  temp-sense_sky130hd:
     runs-on: self-hosted
     steps:
 

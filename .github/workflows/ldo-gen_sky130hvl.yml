@@ -1,0 +1,65 @@
+name: Test ldo generator (sky130hvl)
+
+on:
+  # push:
+  #   branches:
+  #   - main
+  # pull_request:
+  workflow_dispatch:
+
+jobs:
+  ldo_sky130hvl:
+    runs-on: self-hosted
+    steps:
+
+      - name: Clone this repo
+        uses: actions/checkout@v2
+
+      - name: Clone OpenFASOC repo
+        run: |
+          mkdir $GITHUB_WORKSPACE/openfasoc && cd $GITHUB_WORKSPACE/openfasoc
+          git clone https://github.com/lulu9312/OpenFASOC && cd OpenFASOC
+
+
+      - name: Run regression - run the generator along with sims
+        timeout-minutes: 600 # change default timeout from 6 hours to 10 hours
+        run: |
+          cp $GITHUB_WORKSPACE/utils/ldo-gen/run_regression.sh $GITHUB_WORKSPACE/openfasoc/OpenFASOC/.
+          cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmod 755 run_regression.sh
+          ./run_regression.sh 
+
+      # - name: Run regression (2) - run the simulations all in parallel and extract results
+      #   timeout-minutes: 420 #stop regression after 7 hours and proceed building results with the existing data
+      #   run: |
+      #     cp $GITHUB_WORKSPACE/utils/run_sim.py /home/$USER/runner_results/.
+      #     cp $GITHUB_WORKSPACE/utils/extract_results.py /home/$USER/runner_results/.
+      #     cd /home/$USER/runner_results/.
+      #     sudo chmod 777 -R ./*
+      #     chmod 755 run_sim.py 
+      #     docker run --rm -v $HOME:$HOME -e USER=$USER -w $PWD ghcr.io/idea-fasoc/openfasoc_ci:alpha bash -c "python3 run_sim.py"
+      #     chmod 755 extract_results.py && python3 extract_results.py
+      #     cd $GITHUB_WORKSPACE && sudo rm -rf openfasoc
+
+      # - name: Build csv files from the extracted results and archive the results
+      #   run: |
+      #     docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
+      #     cp $GITHUB_WORKSPACE/utils/build_csv.py /home/$USER/runner_results/.
+      #     cp $GITHUB_WORKSPACE/utils/build_results.sh /home/$USER/runner_results/.
+      #     cd /home/$USER/runner_results/.
+      #     chmod 755 ./build_results.sh && ./build_results.sh
+
+      # - name: Extract versions information from the image
+      #   run: |
+      #     cd $GITHUB_WORKSPACE
+      #     docker run --rm -v $PWD:$PWD ghcr.io/idea-fasoc/openfasoc_ci:alpha bash -c "chmod 755 /get_versions.sh && /get_versions.sh" > $GITHUB_WORKSPACE/latest/versions.txt
+
+      # - name: Upload the csv data to this repo
+      #   run: |
+
+      #     cd $GITHUB_WORKSPACE
+      #     git status
+      #     git config --global user.name 'sai charan'
+      #     git config --global user.email 'saicharan0112@users.noreply.github.com'
+      #     git add -A 
+      #     git commit -m "add run data"
+      #     git push
