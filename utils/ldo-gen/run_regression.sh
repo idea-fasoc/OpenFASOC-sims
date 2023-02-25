@@ -28,8 +28,8 @@ do
 
     mkdir -p /home/$USER/runner_results/ldo-gen/1.8v-$c\mA
     sudo cp -rf simulations/run/* /home/$USER/runner_results/ldo-gen/1.8v-$c\mA/.
-    sudo cp -rf work/* /home/$USER/runner_results/1.8v-$c\mA/.
-    sudo cp 1.8v-$c\i.log /home/$USER/runner_results/1.8v-$c\mA/.
+    sudo cp -rf work/* /home/$USER/runner_results/ldo-gen/1.8v-$c\mA/.
+    sudo cp 1.8v-$c\i.log /home/$USER/runner_results/ldo-gen/1.8v-$c\mA/.
 
     cd ../../../
 

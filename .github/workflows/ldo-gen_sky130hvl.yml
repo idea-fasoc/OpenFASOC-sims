@@ -9,6 +9,7 @@ on:
 
 jobs:
   ldo_sky130hvl:
+    timeout-minutes: 600 # change default timeout from 6 hours to 10 hours
     runs-on: self-hosted
     steps:
 
@@ -22,7 +23,6 @@ jobs:
 
 
       - name: Run regression - run the generator along with sims
-        timeout-minutes: 600 # change default timeout from 6 hours to 10 hours
         run: |
           cp $GITHUB_WORKSPACE/utils/ldo-gen/run_regression.sh $GITHUB_WORKSPACE/openfasoc/OpenFASOC/.
           cd $GITHUB_WORKSPACE/openfasoc/OpenFASOC/ && chmod 755 run_regression.sh
