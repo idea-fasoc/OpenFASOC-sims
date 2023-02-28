@@ -10,6 +10,7 @@ on:
 jobs:
   temp-sense_sky130hd:
     runs-on: self-hosted
+    timeout-minutes: 600 #stop regression after 10 hours and proceed building results with the existing data
     steps:
 
       - name: Clone this repo
@@ -28,7 +29,7 @@ jobs:
           ./run_regression.sh 
 
       - name: Run regression (2) - run the simulations all in parallel and extract results
-        timeout-minutes: 420 #stop regression after 7 hours and proceed building results with the existing data
+        timeout-minutes: 580 # cancel the run after 580 mins
         run: |
           cp $GITHUB_WORKSPACE/utils/run_sim.py /home/$USER/runner_results/.
           cp $GITHUB_WORKSPACE/utils/extract_results.py /home/$USER/runner_results/.
@@ -40,6 +41,7 @@ jobs:
           cd $GITHUB_WORKSPACE && sudo rm -rf openfasoc
 
       - name: Build csv files from the extracted results and archive the results
+        if: ${{ always() }}
         run: |
           docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
           cp $GITHUB_WORKSPACE/utils/build_csv.py /home/$USER/runner_results/.
