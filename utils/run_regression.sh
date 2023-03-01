@@ -19,7 +19,7 @@
 
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
 
-for h in {5..9..2}
+for h in {3..11..1}
 do
         for i in {2..10..2}
         do
