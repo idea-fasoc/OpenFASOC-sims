@@ -10,7 +10,7 @@ on:
 jobs:
   temp-sense_sky130hd:
     runs-on: self-hosted
-    timeout-minutes: 600 #stop regression after 10 hours and proceed building results with the existing data
+    timeout-minutes: 690 #stop regression after 11 1/2 hours and proceed building results with the existing data
     steps:
 
       - name: Clone this repo
@@ -29,7 +29,7 @@ jobs:
           ./run_regression.sh 
 
       - name: Run regression (2) - run the simulations all in parallel
-        timeout-minutes: 580 # cancel the run after 580 mins
+        timeout-minutes: 660 # cancel the run after 11 hours
         run: |
           cp $GITHUB_WORKSPACE/utils/run_sim.py /home/$USER/runner_results/.
           cp $GITHUB_WORKSPACE/utils/extract_results.py /home/$USER/runner_results/.
