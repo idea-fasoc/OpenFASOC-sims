@@ -48,6 +48,8 @@ jobs:
   clean:
     runs-on: self-hosted
     if: always()
-    steps: [generate, simulate, process]
+    needs: [generate, simulate, process]
+    steps:
+    
       - name: Clean the root privilages folder
         run: sudo rm -rf $GITHUB_WORKSPACE/*
