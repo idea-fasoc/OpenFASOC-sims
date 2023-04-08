@@ -31,25 +31,23 @@ jobs:
     needs: generate
     steps:
 
-      - name: Clone this repo
-        uses: actions/checkout@v2
-
-
       - name: Run simulations by sweeping input parameters defined inside the config file under configuration directory
         run: |
           cd $GITHUB_WORKSPACE/regression
           docker run --rm -v $HOME:$HOME -e USER=$USER -w $PWD openfasoc_ci_image:latest bash -c "pip install pyyaml numpy && python3 run_regression.py ldo simulate"
-          sudo rm -rf $GITHUB_WORKSPACE/*
 
   process:
     runs-on: self-hosted
     needs: [generate, simulate]
     steps:
 
-      - name: Clone this repo
-        uses: actions/checkout@v2
-
-
       - name: Process the results using the simulation log files and extract results
         run: |
           cd $GITHUB_WORKSPACE/regression && python3 run_regression.py ldo process
+
+  clean:
+    runs-on: self-hosted
+    if: always()
+    steps: [generate, simulate, process]
+      - name: Clean the root privilages folder
+        run: sudo rm -rf $GITHUB_WORKSPACE/*
