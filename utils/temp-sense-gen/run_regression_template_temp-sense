@@ -19,9 +19,9 @@
 
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
 
-for h in {3..11..1}
+for h in {start..stop..step}
 do
-        for i in {2..10..2}
+        for i in {start..stop..step}
         do
 
             docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/temp-sense-gen/ && make clean && make sky130hd_temp sim=pex nhead=$h ninv=$i | tee -a $h-head-$i-inv.log"

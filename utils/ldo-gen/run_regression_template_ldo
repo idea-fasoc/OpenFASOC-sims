@@ -19,12 +19,12 @@
 
 IMAGE_NAME="ghcr.io/idea-fasoc/openfasoc_ci:alpha"
 
-for b in $(seq 1.8 0.5 3.3)
+for b in $(seq start step stop)
 do
-    for c in $(seq 0.5 0.5 25)
+    for c in $(seq start step stop)
     do
 
-        docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/ldo-gen/ && make clean && make sky130hvl_ldo_full VoltsOut=$b AmpsMax=$c\e-03 | tee -a $bv-$c\mA.log"
+        docker run --rm -v $PWD:$PWD -w $PWD $IMAGE_NAME bash -c "pip3 install -r requirements.txt && cd openfasoc/generators/ldo-gen/ && make clean && make sky130hvl_ldo VoltsOut=$b AmpsMax=$c\e-03 | tee -a $bv-$c\mA.log"
 
         cd openfasoc/generators/ldo-gen/
 

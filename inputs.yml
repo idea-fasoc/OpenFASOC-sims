@@ -1,0 +1,16 @@
+# generator_name
+ldo-gen:
+
+  # technology
+  - sky130hvl
+
+  # inputs:
+  # - header: start, stop, step
+  # - inverter: start, stop, step
+
+  # inputs:
+  # - VoltsOut: start, stop, step
+  # - AmpsMax: start, stop, step
+  - inputs:
+    - VoltsOut: 1.8, 3.3, 0.5
+    - AmpsMax: 0.5, 25, 0.5
