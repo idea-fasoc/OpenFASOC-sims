@@ -253,10 +253,11 @@ def ldo(data, stage):
 
 
 
-
 #--------------
 # Main section
-configuration="configs/config_ldo.yml"
+#--------------
+
+configuration="configs/config_"+sys.argv[1]+".yml"
 
 if os.path.exists(configuration):
     data = read_config(config_file=configuration)
@@ -268,14 +269,14 @@ else:
 
 if len(sys.argv) > 1:
 
-    if sys.argv[1] == "temp-sense":
+    if sys.argv[1] == "tempsense":
         tempSense(data, sys.argv[2])
 
     elif sys.argv[1] == "ldo":
         ldo(data, sys.argv[2])
 
 else:
-    print(tempSense.__doc__)
+    print("Missing generator name and stage name")
     sys.exit(1)
         
 

@@ -22,7 +22,8 @@ class regression_ldo():
 
     def __init__(self) -> None:
         self.image = "openfasoc_ci_image:latest"
-        self.home_dir = "/home/"+os.getenv("USER")+"/OpenFASOC/"
+        # self.home_dir = "/home/"+os.getenv("USER")+"/OpenFASOC/"
+        self.home_dir = "/home/"+os.getenv("USER")+"/git_runner/actions-runner/_work/OpenFASOC-sims/OpenFASOC-sims/openfasoc/OpenFASOC"
         self.results_work_dir = self.home_dir+"openfasoc/generators/ldo-gen/work"
         self.runner_results_dir = "/home/"+os.getenv("USER")+"/runner_results"
 
@@ -33,7 +34,7 @@ class regression_ldo():
         Returns the path where the work folder is present along with simulations/run folder which contains the spice netlists
         '''
 
-        cmd = "pip3 install -r requirements.txt && cd openfasoc/generators/ldo-gen/ && make clean && make sky130hvl_ldo_full VoltsOut={0} AmpsMax={1}e-03 | tee -a {0}_vin_{1}mA_imax.log".format(vin, imax)
+        cmd = "pip3 install -r requirements.txt && cd openfasoc/generators/ldo-gen/ && make clean && make sky130hvl_ldo VoltsOut={0} AmpsMax={1}e-03 | tee -a {0}_vin_{1}mA_imax.log".format(vin, imax)
 
         os.chdir(self.home_dir)
 

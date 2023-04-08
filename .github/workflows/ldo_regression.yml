@@ -38,7 +38,7 @@ jobs:
       - name: Run simulations by sweeping input parameters defined inside the config file under configuration directory
         run: |
           cd $GITHUB_WORKSPACE/regression
-          docker run --rm -v $HOME:$HOME -e USER=$USER -w $PWD openfasoc_ci_image:latest bash -c "pip install pyyaml && python3 run_regression.py ldo simulate"
+          docker run --rm -v $HOME:$HOME -e USER=$USER -w $PWD openfasoc_ci_image:latest bash -c "pip install pyyaml numpy && python3 run_regression.py ldo simulate"
 
   process:
     runs-on: self-hosted

@@ -22,7 +22,8 @@ class regression_tempsense():
 
     def __init__(self) -> None:
         self.image = "openfasoc_ci_image:latest"
-        self.home_dir = "/home/"+os.getenv("USER")+"/OpenFASOC/"
+        # self.home_dir = "/home/"+os.getenv("USER")+"/OpenFASOC/"
+        self.home_dir = "/home/"+os.getenv("USER")+"/git_runner/actions-runner/_work/OpenFASOC-sims/OpenFASOC-sims/openfasoc/OpenFASOC"
         self.results_work_dir = self.home_dir+"openfasoc/generators/temp-sense-gen/work"
         self.runner_results_dir = "/home/"+os.getenv("USER")+"/runner_results"
 
