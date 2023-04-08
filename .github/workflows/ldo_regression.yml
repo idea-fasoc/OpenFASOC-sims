@@ -25,6 +25,7 @@ jobs:
       - name: Run the generator and build gds, verilog, reports and spice decks
         run: |
           cd $GITHUB_WORKSPACE/regression && python3 run_regression.py ldo generate
+          sudo rm -rf $GITHUB_WORKSPACE/openfasoc
 
   simulate:
     runs-on: self-hosted
