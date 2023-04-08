@@ -28,6 +28,7 @@ jobs:
 
   simulate:
     runs-on: self-hosted
+    needs: generate
     steps:
 
       - name: Clone this repo
@@ -41,6 +42,7 @@ jobs:
 
   process:
     runs-on: self-hosted
+    needs: [generate, simulate]
     steps:
 
       - name: Clone this repo
