@@ -25,7 +25,6 @@ jobs:
       - name: Run the generator and build gds, verilog, reports and spice decks
         run: |
           cd $GITHUB_WORKSPACE/regression && python3 run_regression.py ldo generate
-          sudo rm -rf $GITHUB_WORKSPACE/openfasoc
 
   simulate:
     runs-on: self-hosted
@@ -40,6 +39,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/regression
           docker run --rm -v $HOME:$HOME -e USER=$USER -w $PWD openfasoc_ci_image:latest bash -c "pip install pyyaml numpy && python3 run_regression.py ldo simulate"
+          sudo rm -rf $GITHUB_WORKSPACE/openfasoc
 
   process:
     runs-on: self-hosted
