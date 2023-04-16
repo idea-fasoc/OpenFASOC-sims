@@ -4,8 +4,12 @@
 # each check will be a python module. Before the check, another module should be present to run the generator. The concept behind having these
 # modules is to import them into the main run_regression script. There is also another config file which has the input parameters range. It can also contain additional info but for now nothing other than the range is read.
 
-import os, sys, fileinput, datetime, math
+import os, sys, fileinput, datetime, math, glob
 import subprocess as sp
+
+import ltspice
+import pandas as pd
+import numpy as np
 
 
 class regression_ldo():
@@ -22,7 +26,7 @@ class regression_ldo():
 
     def __init__(self) -> None:
         self.image = "openfasoc_ci_image:latest"
-        # self.home_dir = "/home/"+os.getenv("USER")+"/OpenFASOC/"
+        # self.home_dir = "/home/"+os.getenv("USER")+"/ldo/OpenFASOC/"
         self.home_dir = "/home/"+os.getenv("USER")+"/actions-runner/_work/OpenFASOC-sims/OpenFASOC-sims/openfasoc/OpenFASOC/"
         self.results_work_dir = self.home_dir+"openfasoc/generators/ldo-gen/work"
         self.runner_results_dir = "/home/"+os.getenv("USER")+"/runner_results"
@@ -34,14 +38,23 @@ class regression_ldo():
         Returns the path where the work folder is present along with simulations/run folder which contains the spice netlists
         '''
 
-        cmd = "pip3 install -r requirements.txt && cd openfasoc/generators/ldo-gen/ && make clean && make sky130hvl_ldo VoltsOut={0} AmpsMax={1}e-03 | tee -a {0}_vin_{1}mA_imax.log".format(vin, imax)
+        cmd = "pip3 install -r requirements.txt && cd openfasoc/generators/ldo-gen/ && make clean && make sky130hvl_ldo VoltsOut={0} AmpsMax={1}e-03 pex=True | tee -a {0}_vin_{1}mA_imax.log".format(vin, imax)
 
         os.chdir(self.home_dir)
 
-        status = os.system("docker run --rm -v {0}:{0} -w {0} {1} bash -c '{2}'".format(os.getcwd(),self.image, cmd))
 
-        return status
+        try:
+            status = os.system("docker run --rm -v {0}:{0} -w {0} {1} bash -c '{2}'".format(os.getcwd(),self.image, cmd))
+            logfile = self.results_work_dir+"/../{0}_vin_{1}mA_imax.log".format(vin, imax)
+            with open(logfile) as log:
 
+                if "[Err" in log.read() or "[Err" in log.read() or status:
+                    return 1
+                else:
+                    return 0
+        except:
+            return 1
+            
 
     def checkDRC(self):
         '''
@@ -75,10 +88,11 @@ class regression_ldo():
         Copy work directory and simulation/run directory to temporary run location where simulations and processing of data are done.
         '''
         os.system("mkdir -p "+self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax".format(vin, imax))
-        os.system("cp -rf "+ self.results_work_dir + "/../simulations/run/* "+ self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax".format(vin, imax))
-        os.system("cp -rf "+ self.results_work_dir + " " + self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax".format(vin, imax))
-        os.system("mv "+self.results_work_dir+"/../{0}_vin_{1}mA_imax.log ".format(vin, imax) + self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax".format(vin, imax))
-        os.system("sudo rm -rf "+self.results_work_dir + "/../simulations/run")
+        os.system("cp -rf "+ self.results_work_dir + "/../simulations/run/* "+ self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax/.".format(vin, imax))
+        os.system("cp -rf "+ self.results_work_dir + " " + self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax/.".format(vin, imax))
+        os.system("cp -rf "+ self.results_work_dir + "/../tools/* " + self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax/.".format(vin, imax))
+        os.system("mv "+self.results_work_dir+"/../{0}_vin_{1}mA_imax.log ".format(vin, imax) + self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax/.".format(vin, imax))
+        # os.system("sudo rm -rf "+self.results_work_dir + "/../simulations/run")
 
 
     def runSimulations(self, vin, imax):
@@ -109,10 +123,15 @@ class regression_ldo():
 
             # "['ngspice -b -o ldo_0.1MHz_1p_out.txt -i ldo_tran_1.0mA_0.1MHz_1p.sp', 'ngspice -b -o ldo_0.1MHz_5p_out.txt -i ldo_tran_1.0mA_0.1MHz_5p.sp', 'ngspice -b -o ldo_1.0MHz_1p_out.txt -i ldo_tran_1.0mA_1.0MHz_1p.sp', 'ngspice -b -o ldo_1.0MHz_5p_out.txt -i ldo_tran_1.0mA_1.0MHz_5p.sp', 'ngspice -b -o ldo_10.0MHz_1p_out.txt -i ldo_tran_1.0mA_10.0MHz_1p.sp', 'ngspice -b -o ldo_10.0MHz_5p_out.txt -i ldo_tran_1.0mA_10.0MHz_5p.sp', 'ngspice -b -o pwrout.txt -i pwrarr.sp', 'ngspice -b -o ldo_load_change.txt -i ldo_load_change.sp']"
 
-
+            for root, dirs, names in os.walk(i):
+                dirs.remove("work")
+                break
+            
+            
             # look for directory name starting with PEX and prePEX and build path to ammend to the filename.
-            for j in ["prePEX"]:
-                path = i+"/{0}_PT_cells_13".format(j)
+            for j in dirs:
+
+                path = i+"/"+j
                 runDir = path
 
                 for freq in freqs_list:
@@ -131,35 +150,26 @@ class regression_ldo():
                         )
                         processes.append(p)
 
-                # last two testbenches 
-                p = sp.Popen(
-                    [
-                        "ngspice",
-                        "-b",
-                        "-o",
-                        "pwrout.txt",
-                        "-i",
-                        "pwrarr.sp", 
-                    ]
-                )
-                processes.append(p)
-
-                p = sp.Popen(
-                    [
-                        "ngspice",
-                        "-b",
-                        "-o",
-                        "ldo_load_change.txt",
-                        "-i",
-                        "ldo_load_change.sp", 
-                    ]
-                )
-                processes.append(p)
-
         return processes
-
-
+    
+        
     def processSims(self, vin, imax):
 
-        pass
+        runDir = self.runner_results_dir+"/ldo/{0}_vin_{1}mA_imax/".format(vin, imax)
+
+        for root, dirs, names in os.walk(runDir):
+            dirs.remove("work")
+            break
+        
+        # look for directory name starting with PEX and prePEX and build path to ammend to the filename.
+        for j in dirs:
+
+            sim_dir = runDir+"/"+j+"/"
+
+            sim_type = j.split("_")[0]
+
+            p = sp.Popen(["python3","processing.py","--file_path", sim_dir,"--vref",str(vin),"--iload",str(imax),"--odir",runDir, "--figs", "False", "--simType", sim_type],cwd=runDir)
+            p.wait()
+
+
 

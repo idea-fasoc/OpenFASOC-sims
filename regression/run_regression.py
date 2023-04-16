@@ -1,5 +1,6 @@
 import yaml, sys, subprocess, os, csv
 import numpy as np
+import pandas as pd
 from generators_checks import *
 
 
@@ -75,10 +76,6 @@ def tempSense(data, stage):
                 combs.append([i,j])
         
         # TODO: Compare the len of combos with the number of threads on the runner machine. If exceeds, then split the list of combos by 2, create a new runner machine and launch the other half of simulations on other machine.
-
-        # processes = reg.runSimulations(nhead=7, ninv=8)
-        # for p in processes:
-        #     p.wait()
 
 
     # process simulation logfiles and generate final data
@@ -203,21 +200,28 @@ def ldo(data, stage):
 
     reg = run_checks_ldo.regression_ldo()
 
+    fail_records = open("failed_configs.txt","w+")
+    
+    vin_array = np.round(np.arange(vin[0], vin[1], vin[2]), 1)
+    imax_array = np.round(np.arange(imax[0], imax[1], imax[2]), 1)
+
+
     # generate spice netlists for simulations
     if stage == "generate":
-        for i in np.arange(vin[0], vin[1], vin[2]):
-            for j in np.arange(imax[0], imax[1], imax[2]):
+        for i in vin_array:
+            for j in imax_array:
 
                 if reg.run_generator(vin=i, imax=j):
-                    print("Generator run failed")
-                    sys.exit(1)
+                    print("Generator run failed for config "+str(i)+"vin_"+str(j)+"_imax", file=fail_records)
+                    continue
                 else:
                     print("generator run successeded. processing further...")
 
 
                 if reg.checkLVS():
                     print("Found LVS errors")
-                    sys.exit(1)
+                    print("LVS failed for config "+str(i)+"vin_"+str(j)+"_imax", file=fail_records)
+                    continue
                 else:
                     print("LVS is clean. processing further...")
 
@@ -236,11 +240,16 @@ def ldo(data, stage):
                     print("Copied successfully to runner_results directory. processing further...")
 
 
+    fail_records.close()
 
     # idea is to build the total combinations list and split them by 2. Run simulations on each half.
     # TODO: Create new runner machines, share the above built data with them and run each half of the simulation on each machine. After ending, get back the data to the master machine and do the postprocess
     if stage == "simulate":
-        processes = reg.runSimulations(vin=1.8, imax=1.0)
+        for i in vin_array:
+            for j in imax_array:
+
+                processes = reg.runSimulations(vin=i, imax=j)
+
         for p in processes:
             p.wait()
 
@@ -248,7 +257,38 @@ def ldo(data, stage):
 
     # process simulation logfiles and generate final data
     if stage == "process":    
-        reg.processSims(vin=1.8, imax=1)
+        for i in vin_array:
+            for j in imax_array:
+
+                reg.processSims(vin=i, imax=j)
+
+
+
+    # build the dataset by combining all parameters.csv
+    if stage == "build":
+
+        runner_results_dir = "/home/"+os.getenv("USER")+"/runner_results"
+
+        for type in ["prePEX", "postPEX"]:
+            files = []
+            for i in vin_array:
+                for j in imax_array:
+                        runDir = runner_results_dir+"/ldo/{0}_vin_{1}mA_imax/".format(i, j)
+                        file_path = runDir+"{0}/csv_data/parameters.csv".format(type)
+                        csv = pd.read_csv(file_path)
+                        csv["vin"] = i
+                        csv.to_csv(file_path)
+                        files.append(file_path)
+
+            df = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+
+            colms=[]
+
+            for i in range(len(df.columns)-5):
+                colms.append(i)
+
+            df = df.drop(df.columns[[0,1]], axis=1)
+            df.to_csv(runner_results_dir+"/ldo/{0}_metrics.csv".format(type))
 
 
 

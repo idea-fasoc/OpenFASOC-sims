@@ -28,11 +28,8 @@ jobs:
 
   simulate:
     runs-on: self-hosted
+    needs: generate
     steps:
-
-      - name: Clone this repo
-        uses: actions/checkout@v2
-
 
       - name: Run simulations by sweeping input parameters defined inside the config file under configuration directory
         run: |
@@ -41,12 +38,18 @@ jobs:
 
   process:
     runs-on: self-hosted
+    needs: [generate, simulate]
     steps:
-
-      - name: Clone this repo
-        uses: actions/checkout@v2
-
 
       - name: Process the results using the simulation log files and extract results
         run: |
           cd $GITHUB_WORKSPACE/regression && python3 run_regression.py tempsense process
+
+  clean:
+    runs-on: self-hosted
+    if: always()
+    needs: [generate, simulate, process]
+    steps:
+    
+      - name: Clean the root privilages folder
+        run: sudo rm -rf $GITHUB_WORKSPACE/*
