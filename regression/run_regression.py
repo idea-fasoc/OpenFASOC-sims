@@ -1,4 +1,4 @@
-import yaml, sys, subprocess, os, csv
+import yaml, sys, subprocess, os, csv, itertools, math
 import numpy as np
 import pandas as pd
 from generators_checks import *
@@ -194,6 +194,8 @@ def ldo(data, stage):
     4. build - to build the dataset using the earlier extracted results
     '''
 
+    runner_results_dir = "/home/"+os.getenv("USER")+"/runner_results/ldo/"
+
     designName = data["designName"]
     vin = data["vin"]
     imax = data["imax"]
@@ -201,9 +203,11 @@ def ldo(data, stage):
     reg = run_checks_ldo.regression_ldo()
 
     fail_records = open("failed_configs.txt","w+")
-    
+
+    # https://stackoverflow.com/questions/53580811/np-arange-does-not-work-as-expected-with-floating-point-arguments
     vin_array = np.round(np.arange(vin[0], vin[1], vin[2]), 1)
     imax_array = np.round(np.arange(imax[0], imax[1], imax[2]), 1)
+    split_strategy = 3
 
 
     # generate spice netlists for simulations
@@ -243,7 +247,42 @@ def ldo(data, stage):
     fail_records.close()
 
     # idea is to build the total combinations list and split them by 2. Run simulations on each half.
-    # TODO: Create new runner machines, share the above built data with them and run each half of the simulation on each machine. After ending, get back the data to the master machine and do the postprocess
+    # TODO: Create new runner machines, split the above built data with them and run each split of the simulation on a single machine. After ending, get back the data to the master machine and do the postprocess
+
+
+    # split the list of dirs that are generated and create a diff folder for each split and store it on cloud bucket
+    if stage == "splitndist":
+
+        total_dirs = os.listdir(runner_results_dir)
+        total_count = len(total_dirs)
+
+        start = 0
+        end = math.ceil(total_count/split_strategy)
+        incr = end
+
+        for i in range(split_strategy):
+
+
+            print("MACHINE_"+str(i)+"="+str(total_dirs[start:end]))
+            os.system(runner_results_dir)
+
+            os.system("gsutil -m cp -r "+runner_results_dir+" gs://openfasoc_ci_bucket/"+runner_results_dir.split("/")[-1])
+
+
+            start = end
+            end += incr
+          
+
+    # TODO: add a stage to pull data from the cloud bucket and place it in a location so that the "simulate" step can run it directly.
+    if stage == "pullfrombucket":
+        
+        # this stage is actually runned on a different job and on a different machine.
+        # pull the data from the bucket using the command "os.system("gsutil -m cp -r "+runner_results_dir+" gs://openfasoc_ci_bucket/"+runner_results_dir.split("/")[-1])" and place it inside the location /home/runner_results
+        pass
+
+
+
+    # run simulations based on the machine and the list part of that particular split
     if stage == "simulate":
         for i in vin_array:
             for j in imax_array:
@@ -255,7 +294,16 @@ def ldo(data, stage):
 
 
 
+    # TODO: another stage to push the data back to the cloud bucket
+    if stage == "pushtobucket":
+
+        # this stage will just push the /home/runner_results back to the cloud bucket
+        pass
+
+
+
     # process simulation logfiles and generate final data
+    # TODO: this stage should now contain another sub-step to pull the data from the bucket into the main runner
     if stage == "process":    
         for i in vin_array:
             for j in imax_array:

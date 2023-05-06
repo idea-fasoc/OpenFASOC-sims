@@ -1,3 +1,3 @@
 designName: tempSenseInst_error
-ninv: [2, 10, 2]
-nhead: [5, 9, 1]
+ninv: [3, 5, 1]
+nhead: [5, 7, 1]

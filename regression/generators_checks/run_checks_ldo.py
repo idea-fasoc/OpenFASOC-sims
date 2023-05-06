@@ -7,7 +7,6 @@
 import os, sys, fileinput, datetime, math, glob
 import subprocess as sp
 
-import ltspice
 import pandas as pd
 import numpy as np
 
