@@ -45,11 +45,11 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/regression && python3 run_regression.py tempsense process
 
-  clean:
-    runs-on: self-hosted
-    if: always()
-    needs: [generate, simulate, process]
-    steps:
+  # clean:
+  #   runs-on: self-hosted
+  #   if: always()
+  #   needs: [generate, simulate, process]
+  #   steps:
     
-      - name: Clean the root privilages folder
-        run: sudo rm -rf $GITHUB_WORKSPACE/*
+  #     - name: Clean the root privilages folder
+  #       run: sudo rm -rf $GITHUB_WORKSPACE/*
