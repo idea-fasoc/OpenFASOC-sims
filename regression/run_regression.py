@@ -70,17 +70,28 @@ def tempSense(data, stage):
     # TODO: Create new runner machines, share the above built data with them and run each half of the simulation on each machine. After ending, get back the data to the master machine and do the postprocess
     if stage == "simulate":
 
-        combs = []
         for i in range(ninv[0], ninv[1], ninv[2]):
             for j in range(nhead[0], nhead[1], nhead[2]):
-                combs.append([i,j])
-        
-        # TODO: Compare the len of combos with the number of threads on the runner machine. If exceeds, then split the list of combos by 2, create a new runner machine and launch the other half of simulations on other machine.
+
+                if reg.runSimulations(ninv=i, nhead=j):
+                    print("Simulation failed")
+                    sys.exit(1)
+                else:
+                    print("Simulation successeded. Processing further...")
 
 
     # process simulation logfiles and generate final data
-    if stage == "process":    
-        reg.processSims(nhead=7, ninv=8)
+    if stage == "process":
+        
+        for i in range(ninv[0], ninv[1], ninv[2]):
+            for j in range(nhead[0], nhead[1], nhead[2]):
+
+                if reg.processSims(ninv=i, nhead=j):
+                    print("Processing failed")
+                    sys.exit(1)
+                else:
+                    print("Processing successeded. Proceeding further...")
+        
 
 
     # build the final csv file (or push everthing to the database hosted on GCP?)
