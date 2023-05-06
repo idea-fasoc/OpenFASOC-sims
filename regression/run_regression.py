@@ -73,16 +73,16 @@ def tempSense(data, stage):
         for i in range(ninv[0], ninv[1], ninv[2]):
             for j in range(nhead[0], nhead[1], nhead[2]):
 
-                if reg.runSimulations(ninv=i, nhead=j):
-                    print("Simulation failed")
-                    sys.exit(1)
-                else:
-                    print("Simulation successeded. Processing further...")
+                processes = reg.runSimulations(ninv=i, nhead=j)
+
+        for p in processes:
+            p.wait()
+
 
 
     # process simulation logfiles and generate final data
     if stage == "process":
-        
+
         for i in range(ninv[0], ninv[1], ninv[2]):
             for j in range(nhead[0], nhead[1], nhead[2]):
 
